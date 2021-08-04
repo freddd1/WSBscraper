@@ -1,7 +1,6 @@
 import praw
 
 
-
 reddit = praw.Reddit()
 
 sub = 'wallstreetbets'
