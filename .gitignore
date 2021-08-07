@@ -1,5 +1,5 @@
 #scraped data
-/posts
+/posts/
 
 # API credentials
 praw.ini
