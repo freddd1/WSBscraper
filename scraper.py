@@ -13,7 +13,7 @@ class Scraper:
         self.sort = sort
         self.lim = lim
 
-        print(f'Scraper instance created with values 'f'sub = {sub}, sort = {sort}, lim = {lim}')
+        print(f'Scraper instance created; values 'f'sub = {sub}, sort = {sort}, lim = {lim}')
 
     def set_sort(self):
         if self.sort == 'new':
@@ -28,32 +28,32 @@ class Scraper:
             return self.sort, reddit.subreddit(self.sub).hot(limit=self.lim)
 
     def get_posts(self):
-        tickers = {}
+
         with open('tickers.csv', mode='r') as infile:
             reader = csv.reader(infile)
-            for row in reader:
-                tickers[row[0]] = {}
+            tickers = [row[0] for row in reader]
+
         """Get unique posts from a specified subreddit."""
         # Attempt to specify a sorting method.
         sort, subreddit = self.set_sort()
 
         print(f'Collecting information from r/{self.sub}.')
 
-        # mentionedStocks = []
-        # i = 0
-        # for post in subreddit:
-        #     i = i + 1
-        #     print(i)
-        #     if post.link_flair_text != 'Meme':
-        #         for stock in stockTickers.keys():
-        #             if (re.search(r'\s+\$?' + stock + r'\$?\s+', post.selftext) or re.search(
-        #                     r'\s+\$?' + stock + r'\$?\s+', post.title)):
-        #                 stockTickers[stock][post.id] = StockPost(post.id, post.permalink, post.ups, post.downs,
-        #                                                          post.num_comments, stock)
-        # for stock in stockTickers:
-        #     if len(stockTickers[stock]) > 0:
-        #         for post in stockTickers[stock]:
-        #             mentionedStocks.append(stockTickers[stock][post])
+        mentionedStocks = []
+        i = 0
+        for post in subreddit:
+            i = i + 1
+            print(i)
+            if post.link_flair_text != 'Meme':
+                for stock in stockTickers.keys():
+                    if (re.search(r'\s+\$?' + stock + r'\$?\s+', post.selftext) or re.search(
+                            r'\s+\$?' + stock + r'\$?\s+', post.title)):
+                        stockTickers[stock][post.id] = StockPost(post.id, post.permalink, post.ups, post.downs,
+                                                                 post.num_comments, stock)
+        for stock in stockTickers:
+            if len(stockTickers[stock]) > 0:
+                for post in stockTickers[stock]:
+                    mentionedStocks.append(stockTickers[stock][post])
         #
         # json_object = json.dumps(mentionedStocks, default=jsonDefEncoder, indent=4)
         # print(json_object)
