@@ -4,7 +4,7 @@ import re
 from posts import Post
 import json
 from datetime import datetime
-# import requests
+
 
 
 class Scraper:
@@ -37,7 +37,6 @@ class Scraper:
 
         """Get unique posts from a specified subreddit."""
 
-
         # Attempt to specify a sorting method.
         sort, subreddit = self.set_sort()
 
@@ -53,13 +52,12 @@ class Scraper:
                             or re.search(search, post.title.upper()):
 
                         id = str(post.id)
-                        if id in posts: # in case post speaks on few stocks
+                        if id in posts:  # in case post speaks on few stocks
                             posts[id]['stock'].append(stock)
                         else:
                             posts[id] = Post(stock, post).json_enc()
 
-            if (i+1)%25 == 0: print(f'scraped {i+1} posts') # print progress
-
+            if (i + 1) % 25 == 0: print(f'scraped {i + 1} posts')  # print progress
 
         file_name = 'posts/{}_{}.json'.format(str(datetime.now().strftime('%m-%d-%Y_%H-%M-%S')),
                                               str(len(posts)))
@@ -68,7 +66,6 @@ class Scraper:
         with open(file_name, 'w') as f:
             json.dump(posts, f, indent=4)
 
+
 if __name__ == '__main__':
     Scraper('wallstreetbets', lim=10, sort='new').get_posts()
-
-

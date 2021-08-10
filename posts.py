@@ -1,4 +1,3 @@
-import datetime
 from datetime import datetime
 
 class Post(object):
@@ -36,33 +35,3 @@ class Post(object):
                 'scrape_datetime': self.scrape_datetime,
         }
 
-    # def json_enc(obj):
-    #     if hasattr(obj, 'json_enc'):
-    #         return obj._json_enc()
-    #     else:  # some default behavior
-    #         return obj.__dict__
-
-    # print(post.id)
-    # print(post.author.id, post.author)
-    # print(post.title)
-    # print(post.selftext)
-    # print(post.link_flair_text)
-    # print(post.name)
-    # print(post.num_comments)
-    # print(post.permalink)
-    # print(post.permalink)
-    # print(post.url)
-    # print(post.score)
-    # print(post.upvote_ratio)
-    # print(post.created_utc)
-    # print(datetime.fromtimestamp(post.created_utc))
-    # print(datetime.now())
-# import praw
-# reddit = praw.Reddit()
-# sub = 'wallstreetbets'
-# subreddit = reddit.subreddit(sub)
-#
-# i = 1
-# for post in subreddit.hot(limit=1):
-#     a = Post(post)
-#     print(a.post_id)
