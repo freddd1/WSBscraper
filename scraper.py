@@ -1,14 +1,14 @@
 import praw
 import csv
-# import re
-# import json
+import re
+from posts import Post
+import json
+from datetime import datetime
 # import requests
-
-reddit = praw.Reddit()
 
 
 class Scraper:
-    def __init__(self, sub, sort='new', lim=900):
+    def __init__(self, sub, sort='hot', lim=900):
         self.sub = sub
         self.sort = sort
         self.lim = lim
@@ -16,6 +16,8 @@ class Scraper:
         print(f'Scraper instance created; values 'f'sub = {sub}, sort = {sort}, lim = {lim}')
 
     def set_sort(self):
+        reddit = praw.Reddit()
+
         if self.sort == 'new':
             return self.sort, reddit.subreddit(self.sub).new(limit=self.lim)
         elif self.sort == 'top':
@@ -34,38 +36,39 @@ class Scraper:
             tickers = [row[0] for row in reader]
 
         """Get unique posts from a specified subreddit."""
+
+
         # Attempt to specify a sorting method.
         sort, subreddit = self.set_sort()
 
         print(f'Collecting information from r/{self.sub}.')
 
-        mentionedStocks = []
-        i = 0
-        for post in subreddit:
-            i = i + 1
-            print(i)
+        posts = {}
+        for i, post in enumerate(subreddit):
             if post.link_flair_text != 'Meme':
-                for stock in stockTickers.keys():
-                    if (re.search(r'\s+\$?' + stock + r'\$?\s+', post.selftext) or re.search(
-                            r'\s+\$?' + stock + r'\$?\s+', post.title)):
-                        stockTickers[stock][post.id] = StockPost(post.id, post.permalink, post.ups, post.downs,
-                                                                 post.num_comments, stock)
-        for stock in stockTickers:
-            if len(stockTickers[stock]) > 0:
-                for post in stockTickers[stock]:
-                    mentionedStocks.append(stockTickers[stock][post])
-        #
-        # json_object = json.dumps(mentionedStocks, default=jsonDefEncoder, indent=4)
-        # print(json_object)
+                for stock in tickers:
+                    # search for stock pattern:" $ticker " or " ticker$ " or " ticker "
+                    search = r'\s\$?' + stock + r'\$?\s'
+                    if re.search(search, post.selftext.upper()) \
+                            or re.search(search, post.title.upper()):
 
-        # with open('new.json', 'w') as j:
-        #     json.dump(mentionedStocks, j, default=jsonDefEncoder, indent=4)
+                        id = str(post.id)
+                        if id in posts: # in case post speaks on few stocks
+                            posts[id]['stock'].append(stock)
+                        else:
+                            posts[id] = Post(stock, post).json_enc()
 
-        # headers = {'Content-type': 'application/json', 'Accept': 'application/json', 'Flamingo-Signature': ""}
-        # r = requests.post("https://wsbstonks.azurewebsites.net/api/RedditPostsAdmin", data=json_object, headers=headers)
-        # print(r.status_code)
-        # print(r.text)
+            if (i+1)%25 == 0: print(f'scraped {i+1} posts') # print progress
 
+
+        file_name = 'posts/{}_{}.json'.format(str(datetime.now().strftime('%m-%d-%Y_%H-%M-%S')),
+                                              str(len(posts)))
+        # the file is saved in posts dir
+        # with the name <date>_<time>_<num of posts>.json
+        with open(file_name, 'w') as f:
+            json.dump(posts, f, indent=4)
 
 if __name__ == '__main__':
-    Scraper('wallstreetbets', lim=10, sort='hot').get_posts()
+    Scraper('wallstreetbets', lim=10, sort='new').get_posts()
+
+
