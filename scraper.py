@@ -82,5 +82,5 @@ try:
         sleep(60 * 61)  # run the script every hour
 
 except KeyboardInterrupt:
-    print('\n[-] keyboard interrupt...quitting...saving file')
-    scraper.save_to_json()
+    print('\n[-] keyboard interrupt...quitting')
+
